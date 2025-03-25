@@ -15,13 +15,13 @@
   font-family: "Roboto", sans-serif;
 }
 
-button {
+/* button {
   all: unset;
-}
+} */
 
-a:-webkit-any-link {
+/* a:-webkit-any-link {
   color: var(--color-primary);
-}
+} */
 
 
 

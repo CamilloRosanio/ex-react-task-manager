@@ -1,13 +1,14 @@
 // UTILITY
 import { useState, useEffect } from "react";
 
+
 // ENV
 const { VITE_API_URL } = import.meta.env;
 
 
-
 export default function useTasks() {
 
+    // Ho spostato la seguente logica dal GlobalContext a questo mio CUSTOM-HOOK, per centralizzare maggiormente funzioni e dati.
     const [tasks, setTasks] = useState([]);
 
     // SETUP USE-EFFECT
