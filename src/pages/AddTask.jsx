@@ -1,5 +1,9 @@
 // UTILITY
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useContext } from "react";
+
+
+// CONTEXT
+import { GlobalContext } from "../context/GlobalContext";
 
 
 // DATA
@@ -8,6 +12,8 @@ const symbols = "!@#$%^&*()-_=+[]{}|;:'\\\",.<>?/`~";
 
 
 export default function AddTask() {
+
+    const { addTask } = useContext(GlobalContext);
 
     // FORM FIELDS
     // Uso un CONTROLLED-FIELD (quindi con useState) per il titolo, in quanto è necessaria una validazione del VALUE in tempo reale.
@@ -29,18 +35,33 @@ export default function AddTask() {
 
     }, [taskTitle])
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (taskTitleError) return;
 
         const newTask = {
             title: taskTitle,
-            descriptio: descriptionRef.current.value,
+            description: descriptionRef.current.value,
             status: statusRef.current.value,
         }
 
+        // DEBUG
         console.log('Task da aggiungere:', newTask);
+
+        // TRY-CATCH
+        // Eseguo qui un try catch, perchè come abbiamo visto nell'hook useTasks, l'esito dell'operazione può variare.
+        try {
+            await addTask(newTask);
+            alert('Task creata con successo.');
+
+            // FORM RESET
+            setTaskTitle('');
+            descriptionRef.current.value = '';
+            statusRef.current.value = '';
+        } catch (error) {
+            alert(error.message);
+        }
     };
 
     return <>
