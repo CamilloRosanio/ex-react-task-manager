@@ -19,9 +19,9 @@ function App() {
       <GlobalProvider>
         <BrowserRouter>
 
-          <nav>
-            <NavLink to='/' >Lista Task</NavLink>
-            <NavLink to='/add' >Aggiungi Task</NavLink>
+          <nav className="debug">
+            <NavLink to='/' className="debug">Lista Task</NavLink>
+            <NavLink to='/add' className="debug">Aggiungi Task</NavLink>
           </nav>
 
           <Routes>

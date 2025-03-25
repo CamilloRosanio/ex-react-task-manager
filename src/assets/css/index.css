@@ -26,5 +26,30 @@ a:-webkit-any-link {
 
 
 /*******************************************************************
+# GENERAL
+*******************************************************************/
+
+.todo {
+  background-color: lightpink;
+}
+
+.doing {
+  background-color: gold;
+
+}
+
+.done {
+  background-color: lightgreen;
+}
+
+
+
+/*******************************************************************
 # DEBUG
 *******************************************************************/
+
+.debug {
+  background-color: beige;
+  padding: 10px;
+  border: 1px dashed blue;
+}
