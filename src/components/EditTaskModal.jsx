@@ -18,7 +18,6 @@ export default function EditTaskModal({ show, onClose, task, onSave }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave(editedTask);
-        onClose();
     }
 
     const { title, description, status } = editedTask;
