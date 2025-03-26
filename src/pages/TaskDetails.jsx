@@ -1,6 +1,7 @@
 // UTILITY
 import { useParams, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
+import dayjs from "dayjs";
 
 
 // CONTEXT
@@ -56,7 +57,10 @@ export default function TaskDetail() {
                 <p className="debug">Titolo: {task.title}</p>
                 <p className="debug">Descrizione: {task.description}</p>
                 <p className="debug">Status: {task.status}</p>
-                <p className="debug">Data di creazione: {new Date(task.createdAt).toLocaleDateString()}</p>
+                {/* DATA IN FORMATO INGLESE */}
+                {/* <p className="debug">Data di creazione: {new Date(task.createdAt).toLocaleDateString()}</p> */}
+                {/* DATA CON FORMATO ITALIANO tramite DAYJS */}
+                <p className="debug">Data di creazione: {dayjs(task.createdAt).format('DD/MM/YYYY')}</p>
 
                 <button onClick={() => setShowDeleteModal(true)}>Elimina Task</button>
 
