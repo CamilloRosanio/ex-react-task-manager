@@ -78,7 +78,7 @@ export default function AddTask() {
                     />
                 </label>
                 {taskTitleError &&
-                    <p style={{ color: 'red' }}>{taskTitleError}</p>
+                    <p style={{ color: 'red' }} className="debug">{taskTitleError}</p>
                 }
                 <label className="debug">
                     Descrizione:
