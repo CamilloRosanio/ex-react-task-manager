@@ -25,7 +25,7 @@ function debounce(callback, delay) {
 
 export default function TaskList() {
 
-    const { tasks } = useContext(GlobalContext);
+    const { tasks, removeMultipleTask } = useContext(GlobalContext);
     const [searchQuery, setSearchQuery] = useState('');
 
     // DEBOUNCE RICERCA
@@ -38,6 +38,38 @@ export default function TaskList() {
     const [sortOrder, setSortOrder] = useState(1);
 
     const sortIcon = sortOrder === 1 ? '↓' : '↑';
+
+    const [selectedTaskIds, setSelectedTaskIds] = useState([]);
+    const toggleSelection = (taskId) => {
+
+        // V1 - esteso
+        // if (selectedTaskIds.includes(taskId)) {
+        //     setSelectedTaskIds(prev => prev.filter(id => id !== taskId))
+        // } else {
+        //     setSelectedTaskIds(prev => [...prev, taskId])
+        // }
+
+
+        // V2 - compatta
+        setSelectedTaskIds(prev => {
+            if (selectedTaskIds.includes(taskId)) {
+                return prev.filter(id => id !== taskId);
+            } else {
+                return [...prev, taskId];
+            }
+        })
+    }
+
+    const handleDeleteSelected = async () => {
+        try {
+            await removeMultipleTask(selectedTaskIds);
+            alert('Task selezionate eliminate correttamente!');
+            setSelectedTaskIds([]);
+        } catch (error) {
+            console.error(error);
+            alert(error.message)
+        }
+    }
 
     const handleSort = (field) => {
         if (sortBy === field) {
@@ -89,9 +121,20 @@ export default function TaskList() {
                 onChange={e => debouncedSetSearchQuery(e.target.value)}
             />
 
+            {/* TASKS CHECKED */}
+            {selectedTaskIds.length > 0 &&
+                <div className="debug">
+                    <h3>Selected Tasks:</h3>
+                    <p>{selectedTaskIds.join(', ')}</p>
+
+                    <button onClick={handleDeleteSelected}>Elimina Tasks selezionate</button>
+                </div>
+            }
+
             <table>
                 <thead>
                     <tr>
+                        <th className="debug"></th>
                         <th className="debug" onClick={() => handleSort('title')}>
                             Nome {sortBy === 'title' && sortIcon}
                         </th>
@@ -106,7 +149,13 @@ export default function TaskList() {
 
                 <tbody>
                     {filteredAndSortedTasks.map(task => (
-                        <TaskRow key={task.id} task={task} className='debug' />
+                        <TaskRow
+                            key={task.id}
+                            task={task}
+                            checked={selectedTaskIds.includes(task.id)}
+                            onToggle={toggleSelection}
+                            className='debug'
+                        />
                     ))}
                 </tbody>
             </table>

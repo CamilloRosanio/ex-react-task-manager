@@ -41,6 +41,43 @@ export default function useTasks() {
         setTasks(prev => prev.filter(task => task.id !== taskId));
     };
 
+    const removeMultipleTask = async (taskIds) => {
+        const deleteRequests = taskIds.map(taskId =>
+            fetch(`${VITE_API_URL}/tasks/${taskId}`, {
+                method: 'DELETE',
+            })
+                .then(res => res.json())
+        )
+
+        // Results è l'insieme di tutte le promises, sia fulfilled che non.
+        const results = await Promise.allSettled(deleteRequests);
+
+        const fulfilledDeletions = [];
+        const rejectedDeletions = [];
+
+        // Smisto le Promises con esito positivo o negativo nei due Array che ho appena dichiarato.
+        results.forEach((result, index) => {
+            const taskId = taskIds[index];
+            if (result.status === 'fulfilled' && result.value.success) {
+                fulfilledDeletions.push(taskId);
+            } else {
+                rejectedDeletions.push(taskId);
+            }
+        })
+
+        if (fulfilledDeletions.length > 0) {
+            setTasks(prev =>
+                prev.filter(t => !fulfilledDeletions.includes(t.id))
+            )
+        }
+
+        if (rejectedDeletions.length > 0) {
+            throw new Error(`Errore nell'eliminazione delle Task con ID: 
+                ${rejectedDeletions.join(', ')}`
+            )
+        }
+    }
+
     const updateTask = async (updatedTask) => {
         const response = await fetch(`${VITE_API_URL}/tasks/${updatedTask.id}`, {
             method: 'PUT',
@@ -53,5 +90,5 @@ export default function useTasks() {
         setTasks(prev => prev.map(t => t.id === task.id ? task : t));
     };
 
-    return { tasks, addTask, removeTask, updateTask };
+    return { tasks, addTask, removeTask, updateTask, removeMultipleTask };
 }

@@ -15,12 +15,19 @@ Sto dicendo al componente "ogni volta che vieni montato e usato crea una version
 */
 
 
-const TaskRow = memo(({ task }) => {
+const TaskRow = memo(({ task, checked, onToggle }) => {
 
     const statusClassName = task.status.replace(' ', '').toLowerCase();
 
     return <>
         <tr className="debug">
+            <td>
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => onToggle(task.id)}
+                />
+            </td>
             <td><Link to={`/task/${task.id}`}>{task.title}</Link></td>
             <td className={statusClassName}>{task.status}</td>
             <td>{new Date(task.createdAt).toLocaleDateString()}</td>
