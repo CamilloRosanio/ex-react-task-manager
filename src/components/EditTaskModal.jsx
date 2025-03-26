@@ -15,6 +15,7 @@ export default function EditTaskModal({ show, onClose, task, onSave }) {
         setEditedTask(prev => ({ ...prev, [key]: event.target.value }))
     }
 
+    // Scateno il SUBMIT del FORM tramite useRef così non ho due bottoni che fanno la stessa cosa, cioè quello del Form e quello della Modal. In questo modo è il bottone della Modal che scatena il Submit del form.
     const handleSubmit = (e) => {
         e.preventDefault();
         onSave(editedTask);

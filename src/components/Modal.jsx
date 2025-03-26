@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 
 
-export default function Modal({ title, content, show, onClose, onCofnirm, confirmText = 'Conferma' }) {
+export default function Modal({ title, content, show, onClose, onConfirm, confirmText = 'Conferma' }) {
 
     // Mostro la modale solo se "show" è TRUE, altrimenti ritorno NULL.
     if (!show) return null;
@@ -17,7 +17,7 @@ export default function Modal({ title, content, show, onClose, onCofnirm, confir
 
                 <div className="modal-actions">
                     <button onClick={onClose}>Annulla</button>
-                    <button onClick={onCofnirm}>{confirmText}</button>
+                    <button onClick={onConfirm}>{confirmText}</button>
                 </div>
 
             </div>

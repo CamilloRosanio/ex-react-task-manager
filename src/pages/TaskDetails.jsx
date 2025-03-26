@@ -60,7 +60,7 @@ export default function TaskDetail() {
 
                 <button onClick={() => setShowDeleteModal(true)}>Elimina Task</button>
 
-                <button onClick={() => setShowEditModal(true)}>Modifica Task</button>
+                <button onClick={() => { setShowEditModal(true); console.log('Modale EDIT mostrata.') }}>Modifica Task</button>
 
                 {/* MODAL - DELETE */}
                 <Modal
