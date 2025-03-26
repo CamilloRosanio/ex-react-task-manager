@@ -1,5 +1,5 @@
 // UTILITY
-import { useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 
 
 // CONTEXT
@@ -10,9 +10,30 @@ import { GlobalContext } from "../context/GlobalContext";
 import TaskRow from "../components/TaskRow";
 
 
+// GENERIC DEBOUNCE FUNCTION
+// Applico questa funzione alla barra di ricerca per ottimizzare le prestazioni dell'applicativo, ed eseguire appunto il filtraggio delle Tasks solo quando l'utente ha finito di scrivere, passato un dato tempo (delay).
+function debounce(callback, delay) {
+    let timer;
+    return (value) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            callback(value);
+        }, delay)
+    }
+}
+
+
 export default function TaskList() {
 
     const { tasks } = useContext(GlobalContext);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // DEBOUNCE RICERCA
+    // E' necessario usare "useCallback di REACT perchè voglio memorizzare questa funzione senza ricrearla ad ogni mounting del componente. Senza lo useCallback, verrebbero create molteplici versioni di DEBOUNCE ad ogni re-rendering del componente, che continuerebbero a funzionare in background rendendo l'applicativo poco efficiente."
+    const debouncedSetSearchQuery = useCallback(
+        debounce(setSearchQuery, 500)
+        , []);
+
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState(1);
 
@@ -27,34 +48,47 @@ export default function TaskList() {
         }
     }
 
-    const sortedTask = useMemo(() => {
+    const filteredAndSortedTasks = useMemo(() => {
 
         // Utilizzo lo SPREAD di "tasks" per crearne una copia, così da non manipolare lo State originale.
-        return [...tasks].sort((a, b) => {
+        return [...tasks]
+            .filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .sort((a, b) => {
 
-            let comparison;
+                let comparison;
 
-            if (sortBy === 'title') {
-                comparison = a.title.localeCompare(b.title);
-            } else if (sortBy === 'status') {
-                const statusOptions = ['To do', 'Doing', 'Done'];
-                const indexA = statusOptions.indexOf(a.status);
-                const indexB = statusOptions.indexOf(b.status);
-                comparison = indexA - indexB;
-            } else if (sortBy === 'createdAt') {
-                const dateA = new Date(a.createdAt).getTime();
-                const dateB = new Date(b.createdAt).getTime();
-                comparison = dateA - dateB;
-            }
+                if (sortBy === 'title') {
+                    comparison = a.title.localeCompare(b.title);
+                } else if (sortBy === 'status') {
+                    const statusOptions = ['To do', 'Doing', 'Done'];
+                    const indexA = statusOptions.indexOf(a.status);
+                    const indexB = statusOptions.indexOf(b.status);
+                    comparison = indexA - indexB;
+                } else if (sortBy === 'createdAt') {
+                    const dateA = new Date(a.createdAt).getTime();
+                    const dateB = new Date(b.createdAt).getTime();
+                    comparison = dateA - dateB;
+                }
 
-            return comparison * sortOrder;
-        })
+                return comparison * sortOrder;
+            })
 
-    }, [tasks, sortBy, sortOrder])
+    }, [tasks, sortBy, sortOrder, searchQuery])
 
     return <>
         <div>
             <h1 className="debug">Lista delle Tasks</h1>
+
+            {/* SEARCHBAR */}
+            <input
+                className="debug"
+                type="text"
+                placeholder="Cerca una Task..."
+                // NOTA: Nel momento in cui applico il DEBOUNCE, devo smettere di utilizzare il VALUE (sotto commentato per non eliminarlo del tutto)
+                // value={searchQuery}
+                onChange={e => debouncedSetSearchQuery(e.target.value)}
+            />
+
             <table>
                 <thead>
                     <tr>
@@ -71,7 +105,7 @@ export default function TaskList() {
                 </thead>
 
                 <tbody>
-                    {sortedTask.map(task => (
+                    {filteredAndSortedTasks.map(task => (
                         <TaskRow key={task.id} task={task} className='debug' />
                     ))}
                 </tbody>
